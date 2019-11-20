@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.View;
 import android.widget.Toast;
 
 import org.osmdroid.config.Configuration;
@@ -15,31 +14,19 @@ import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends Activity implements MapEventsReceiver{
     MapView map;
     MapController mapController;
-    ArrayList<OverlayItem> overlayItemArray;
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //handle permissions first, before map is created. not depicted here
-
-        //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        //setting this before the layout is inflated is a good idea
-        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
-        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
-        //see also StorageUtils
-        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's tile servers will get you banned based on this string
 
-        //inflate and create the map
         setContentView(R.layout.activity_main);
 
         map = (MapView) findViewById(R.id.map);
@@ -49,23 +36,9 @@ public class MainActivity extends Activity implements MapEventsReceiver{
         map.setClickable(true);
         map.setMultiTouchControls(true);
 
-        final List<GeoPoint> MyPoints = new ArrayList<>();
-
-
-//        Marker marker = new Marker();
-
-        map.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-
-//                MyPoints.add(new GeoPoint());
-                return false;
-            }
-        });
-
-        mapController.setZoom(11);
         GeoPoint startPoint = new GeoPoint(50.061389, 19.938333);
         mapController.setCenter(startPoint);
+        mapController.setZoom(11);
 
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
         map.getOverlays().add(0, mapEventsOverlay);
@@ -73,20 +46,12 @@ public class MainActivity extends Activity implements MapEventsReceiver{
 
     public void onResume(){
         super.onResume();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-        map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        map.onResume();
     }
 
     public void onPause(){
         super.onPause();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().save(this, prefs);
-        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        map.onPause();
     }
 
     @Override
@@ -97,6 +62,16 @@ public class MainActivity extends Activity implements MapEventsReceiver{
     @Override
     public boolean longPressHelper(GeoPoint p) {
         Toast.makeText(this, "Tap on ("+p.getLatitude()+","+p.getLongitude()+")", Toast.LENGTH_SHORT).show();
+
+        Marker marker = new Marker(map);
+        marker.setPosition(p);
+
+        map.getOverlays().add(marker);
+        map.invalidate();
+
+        marker.setInfoWindow(new BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map));
+        marker.setTitle("Centered on "+p.getLatitude()+","+p.getLongitude());
+
         return true;
     }
 }
