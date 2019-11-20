@@ -5,8 +5,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 public class MainActivity extends Activity {
@@ -33,6 +35,11 @@ public class MainActivity extends Activity {
 
         map.setClickable(true);
         map.setMultiTouchControls(true);
+
+        IMapController mapController = map.getController();
+        mapController.setZoom(9.5);
+        GeoPoint startPoint = new GeoPoint(50.061389, 19.938333);
+        mapController.setCenter(startPoint);
     }
 
     public void onResume(){
