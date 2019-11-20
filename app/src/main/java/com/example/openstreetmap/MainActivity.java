@@ -4,15 +4,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
 
-import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
-    MapView map = null;
+    MapView map;
+    MapController mapController;
+    ArrayList<OverlayItem> overlayItemArray;
+
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -31,13 +40,27 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         map = (MapView) findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
+        mapController = (MapController) map.getController();
 
+        map.setTileSource(TileSourceFactory.MAPNIK);
         map.setClickable(true);
         map.setMultiTouchControls(true);
 
-        IMapController mapController = map.getController();
-        mapController.setZoom(9.5);
+        final List<GeoPoint> MyPoints = new ArrayList<>();
+
+
+//        Marker marker = new Marker();
+
+        map.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+//                MyPoints.add(new GeoPoint());
+                return false;
+            }
+        });
+
+        mapController.setZoom(11);
         GeoPoint startPoint = new GeoPoint(50.061389, 19.938333);
         mapController.setCenter(startPoint);
     }
