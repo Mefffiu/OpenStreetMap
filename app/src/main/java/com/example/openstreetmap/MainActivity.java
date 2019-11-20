@@ -3,6 +3,7 @@ package com.example.openstreetmap;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -36,6 +37,11 @@ public class MainActivity extends Activity implements MapEventsReceiver{
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.activity_main);
+
+        //disable StrictMode in order to allow making network calls in the main thread
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
 
         map = (MapView) findViewById(R.id.map);
         mapController = (MapController) map.getController();
