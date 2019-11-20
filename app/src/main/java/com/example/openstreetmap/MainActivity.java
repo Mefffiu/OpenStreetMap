@@ -88,12 +88,12 @@ public class MainActivity extends Activity implements MapEventsReceiver{
         marker.setInfoWindow(new BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map));
         marker.setTitle("Centered on "+p.getLatitude()+","+p.getLongitude());
 
-//        if (pointList.size() > 1) {
-//            Road road = roadManager.getRoad(pointList);
-//            Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
-//            map.getOverlays().add(roadOverlay);
-//            map.invalidate();
-//        }
+        if (pointList.size() > 1) {
+            Road road = roadManager.getRoad(pointList);
+            Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+            map.getOverlays().add(roadOverlay);
+            map.invalidate();
+        }
 
         return true;
     }
